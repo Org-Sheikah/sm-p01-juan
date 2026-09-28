@@ -1,0 +1,8 @@
+# Rúbrica de Evaluación - Proyecto StockIA
+
+| Criterio | Competente (4-5) | En Desarrollo (3-3.9) | Insuficiente (1-2.9) |
+| :--- | :--- | :--- | :--- |
+| **Análisis y Modelado de Datos** | El modelo relacional en MySQL está perfectamente normalizado, soporta eficientemente las entidades de inventario y cuenta con llaves primarias/foráneas correctas. | El modelo cumple parcialmente, pero presenta redundancias o problemas menores en las relaciones. | El modelo de base de datos está incompleto o no soporta los requerimientos básicos del sistema. |
+| **Implementación Backend y Lógica** | El código en Flask/Django está estructurado limpiamente, implementa correctamente la lógica del negocio y gestiona los datos sin errores. | Funciona parcialmente, pero presenta malas prácticas de codificación o problemas de manejo de excepciones. | El backend no compila, no conecta con la base de datos o carece de la lógica solicitada. |
+| **Algoritmo de Alerta Predictiva** | Implementa de forma lógica y funcional el cálculo basado en tasas de ventas históricas para generar alertas de stock mínimo. | El sistema muestra alertas estáticas o basadas en reglas fijas simples sin evaluar el historial real. | No se implementa ningún mecanismo de alerta o predicción de inventario. |
+| **Gestión de Versiones y Documentación** | Uso fluido de Git con commits estructurados, ramas organizadas y documentación técnica completa en Markdown. | Repositorio con commits desorganizados o documentación incompleta. | Ausencia de control de versiones o documentación del proyecto. |
