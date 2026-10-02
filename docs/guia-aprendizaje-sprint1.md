@@ -1,7 +1,7 @@
 # Guía de Aprendizaje - Sprint 1: Configuración Base y Módulo CRUD de Inventario
 
 ## 1. Objetivo del Sprint
-Establecer la arquitectura base del proyecto utilizando **Python (Flask o Django)** y **MySQL**, implementando la estructura del modelo de datos y el flujo completo de creación, lectura, actualización y eliminación (CRUD) de productos.
+Establecer la arquitectura base del proyecto utilizando **Python (Flask o Django)** y **MySQL**, implementando la estructura del modelo de datos y el flujo completo de creación, lectura, actualización y eliminación (CRUD) de productos. hola
 
 ## 2. Resultados de Aprendizaje Esperados (ADSO)
 * Diseñar bases de datos relacionales normalizadas para la gestión de inventarios.
