@@ -1,4 +1,4 @@
-name: Calculadora de Suma
+name: Calculadora de Suma con Python
 
 on:
   push:
@@ -14,11 +14,18 @@ jobs:
       - name: Descargar codigo
         uses: actions/checkout@v4
 
-      - name: Calcular e imprimir suma
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Ejecutar script de suma en Python
         run: |
-          NUM1=15
-          NUM2=25
-          RESULTADO=$((NUM1 + NUM2))
-          echo "----------------------------------------"
-          echo "El resultado de sumar $NUM1 + $NUM2 es: $RESULTADO"
-          echo "----------------------------------------"
+          python -c "
+          num1 = 15
+          num2 = 25
+          resultado = num1 + num2
+          print('----------------------------------------')
+          print(f'El resultado de sumar {num1} + {num2} en Python es: {resultado}')
+          print('----------------------------------------')
+          "
