@@ -1,4 +1,4 @@
-name: CI GitHub Actions
+name: Calculadora de Suma
 
 on:
   push:
@@ -7,12 +7,18 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  realizar_suma:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Obtener codigo del repositorio
+      - name: Descargar codigo
         uses: actions/checkout@v4
 
-      - name: Ejecutar mensaje de prueba
-        run: echo "¡El workflow de GitHub Actions se ha ejecutado correctamente!"
+      - name: Calcular e imprimir suma
+        run: |
+          NUM1=15
+          NUM2=25
+          RESULTADO=$((NUM1 + NUM2))
+          echo "----------------------------------------"
+          echo "El resultado de sumar $NUM1 + $NUM2 es: $RESULTADO"
+          echo "----------------------------------------"
