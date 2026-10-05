@@ -1,15 +1,25 @@
-name: Calculadora de Suma con Python
+name: Desplegar Web con Python
 
 on:
   push:
     branches: [ "main", "feature/hola" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  realizar_suma:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
@@ -19,5 +29,17 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Ejecutar script de suma en Python
+      - name: Generar HTML con Python
         run: python src/suma.py
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir sitio web generado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

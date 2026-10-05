@@ -4,24 +4,34 @@ num1 = 15
 num2 = 25
 resultado = num1 + num2
 
-# 1. Imprimir en la consola (Logs)
-print("----------------------------------------")
-print(f"El resultado de sumar {num1} + {num2} en Python es: {resultado}")
-print("----------------------------------------")
+# Crear la carpeta public donde estará la página
+os.makedirs("public", exist_ok=True)
 
-# 2. Generar la página visual en GitHub Actions (Job Summary)
-summary_file = os.environ.get('GITHUB_STEP_SUMMARY')
+# Contenido HTML con diseño
+html_content = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado de la Suma</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; text-align: center; padding: 50px; }}
+        .card {{ background: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 12px; display: inline-block; }}
+        h1 {{ color: #58a6ff; }}
+        .result {{ font-size: 2.2em; color: #3fb950; font-weight: bold; margin-top: 15px; }}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🧮 Resultado Calculado con Python</h1>
+        <p>Número 1: <strong>{num1}</strong></p>
+        <p>Número 2: <strong>{num2}</strong></p>
+        <div class="result">Suma Total = {resultado}</div>
+    </div>
+</body>
+</html>
+"""
 
-if summary_file:
-    with open(summary_file, 'a', encoding='utf-8') as f:
-        f.write(f"""
-# 🧮 Reporte de Ejecución - Calculadora Python
+with open("public/index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
 
-| Operación | Valor |
-| :--- | :--- |
-| **Número 1** | `{num1}` |
-| **Número 2** | `{num2}` |
-| **Resultado final** | **`{resultado}`** |
-
-> ✅ **Estado:** Cálculo ejecutado correctamente desde la carpeta `src/suma.py`.
-""")
+print("Página web generada correctamente en public/index.html")
