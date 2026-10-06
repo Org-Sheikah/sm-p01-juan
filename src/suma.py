@@ -111,5 +111,4 @@ html_content = """<!DOCTYPE html>
 
 with open("public/index.html", "w", encoding="utf-8") as f:
     f.write(html_content)
-
 print("Página interactiva generada con éxito en public/index.html")

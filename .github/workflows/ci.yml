@@ -1,25 +1,15 @@
-name: Desplegar Web con Python
+name: CI Pipeline con Django
 
 on:
   push:
     branches: [ "main", "feature/hola" ]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  test_django:
     runs-on: ubuntu-latest
+
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
@@ -29,17 +19,13 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Generar HTML con Python
-        run: python src/suma.py
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Configurar Pages
-        uses: actions/configure-pages@v5
+      - name: Verificar configuración de Django
+        run: python manage.py check
 
-      - name: Subir sitio web generado
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './public'
-
-      - name: Publicar en GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Ejecutar pruebas unitarias
+        run: python manage.py test
