@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora Django</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0d1117; color: #c9d1d9; text-align: center; padding: 50px; }
+        .card { background: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 12px; display: inline-block; width: 300px; }
+        input { width: 90%; padding: 8px; margin: 8px 0; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; }
+        button { width: 95%; padding: 10px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .res { font-size: 1.3em; color: #3fb950; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🧮 Suma con Django</h2>
+        <form method="GET">
+            <input type="number" name="num1" placeholder="Primer número" value="{{ num1 }}" step="any">
+            <input type="number" name="num2" placeholder="Segundo número" value="{{ num2 }}" step="any">
+            <button type="submit">Calcular Suma</button>
+        </form>
+
+        {% if resultado is not None %}
+            <div class="res">Resultado: {{ resultado }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>

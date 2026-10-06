@@ -21,13 +21,13 @@ jobs:
       - name: Generar sitio web estático
         run: python src/suma.py
 
-  # 2. Segundo trabajo: Pruebas unitarias en Django (Versión 2)
+  # 2. Segundo trabajo: Calculadora Django (Versión 2)
   test_django:
     runs-on: ubuntu-latest
     needs: test_calculadora
     environment:
-      name: Django CI Pipeline
-      url: https://github.com/Org-Sheikah/sm-p01-juan
+      name: Calculadora Django
+      url: https://tu-calculadora-django.onrender.com  # <-- Pon aquí el enlace público de tu hosting
     steps:
       - name: Descargar código del repositorio
         uses: actions/checkout@v4
