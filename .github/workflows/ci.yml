@@ -3,7 +3,7 @@ name: CI Pipeline
 on: push
 
 jobs:
-  # 1. Primer trabajo: Generar la calculadora en Python puro (Versión 1)
+  # 1. Primer trabajo: Calculadora estática (Versión 1)
   test_calculadora:
     runs-on: ubuntu-latest
     steps:
@@ -18,10 +18,15 @@ jobs:
       - name: Generar sitio web estático
         run: python src/suma.py
 
+      - name: Publicar enlace en el resumen del Job
+        run: |
+          echo "### 🚀 Versión 1: Calculadora Estática" >> $GITHUB_STEP_SUMMARY
+          echo '<a href="https://org-sheikah.github.io/sm-p01-juan/" target="_blank">🌐 Abrir Calculadora Estática (Nueva Pestaña)</a>' >> $GITHUB_STEP_SUMMARY
+
   # 2. Segundo trabajo: Pruebas unitarias en Django (Versión 2)
   test_django:
     runs-on: ubuntu-latest
-    needs: test_calculadora  # Conecta visualmente ambos bloques en el gráfico
+    needs: test_calculadora
     steps:
       - name: Descargar código del repositorio
         uses: actions/checkout@v4
@@ -41,3 +46,8 @@ jobs:
 
       - name: Ejecutar pruebas unitarias de Django
         run: python manage.py test
+
+      - name: Publicar enlace en el resumen del Job
+        run: |
+          echo "### 🐍 Versión 2: Django CI Pipeline" >> $GITHUB_STEP_SUMMARY
+          echo '<a href="https://github.com/Org-Sheikah/sm-p01-juan" target="_blank">📁 Ver Código Fuente del Proyecto Django (Nueva Pestaña)</a>' >> $GITHUB_STEP_SUMMARY
