@@ -101,20 +101,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images, Audio)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
+# Static files (CSS, JavaScript, Images, Audio)
+# https://docs.djangoproject.com/en/6.1/howto/static-files/
+
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # <-- Carpeta donde Render/WhiteNoise reunirá los archivos
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Almacenamiento optimizado y comprimido para Render
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# 1. Ruta donde Django buscará las carpetas estáticas de la app
+STATICFILES_DIRS = [
+    BASE_DIR / 'calculadora' / 'static',
+]
 
-# Configuración de Archivos Multimedia Subidos (Imágenes y Audios de usuario)
+# 2. Almacenamiento estándar de WhiteNoise (evita fallos estrictos si falta un archivo en los tests)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Configuración de Archivos Multimedia
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-
-# Email
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
