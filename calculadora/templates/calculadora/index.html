@@ -11,7 +11,7 @@
         button { width: 95%; padding: 10px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .res { font-size: 1.3em; color: #3fb950; margin-top: 15px; }
         .media-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #30363d; }
-        img { max-width: 120px; height: auto; margin-bottom: 10px; }
+        img { max-width: 120px; height: auto; margin-bottom: 10px; border-radius: 8px; }
         a { color: #58a6ff; text-decoration: none; }
         audio { width: 100%; margin-top: 10px; }
     </style>
@@ -20,7 +20,7 @@
     <div class="card">
         <!-- 1. IMAGEN DE CABECERA / LOGO -->
         <div>
-            <img src="{% static 'calculadora/images/logo.png' %}" alt="Logo Calculadora" onerror="this.src='https://via.placeholder.com/120/161b22/3fb950?text=Calculadora';">
+            <img src="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" alt="Imagen Calculadora">
         </div>
 
         <h2>🧮 Suma con Django</h2>
@@ -37,8 +37,8 @@
         <!-- 2. REPRODUCTOR DE AUDIO -->
         <div class="media-section">
             <h4>🔊 Efecto de Audio</h4>
-            <audio id="audioBtn" controls>
-                <source src="{% static 'calculadora/audio/click.mp3' %}" type="audio/mpeg">
+            <audio id="audioBtn" controls preload="auto">
+                <source src="{% static 'calculadora/sirena.mp3' %}" type="audio/mpeg">
                 Tu navegador no soporta el elemento de audio.
             </audio>
         </div>
