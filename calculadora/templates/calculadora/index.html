@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,14 +6,23 @@
     <title>Calculadora Django</title>
     <style>
         body { font-family: Arial, sans-serif; background: #0d1117; color: #c9d1d9; text-align: center; padding: 50px; }
-        .card { background: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 12px; display: inline-block; width: 300px; }
+        .card { background: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 12px; display: inline-block; width: 320px; }
         input { width: 90%; padding: 8px; margin: 8px 0; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; }
-        button { width: 95%; padding: 10px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        button { width: 95%; padding: 10px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .res { font-size: 1.3em; color: #3fb950; margin-top: 15px; }
+        .media-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #30363d; }
+        img { max-width: 120px; height: auto; margin-bottom: 10px; }
+        a { color: #58a6ff; text-decoration: none; }
+        audio { width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="card">
+        <!-- 1. IMAGEN DE CABECERA / LOGO -->
+        <div>
+            <img src="{% static 'calculadora/images/logo.png' %}" alt="Logo Calculadora" onerror="this.src='https://via.placeholder.com/120/161b22/3fb950?text=Calculadora';">
+        </div>
+
         <h2>🧮 Suma con Django</h2>
         <form method="GET">
             <input type="number" name="num1" placeholder="Primer número" value="{{ num1 }}" step="any">
@@ -23,6 +33,43 @@
         {% if resultado is not None %}
             <div class="res">Resultado: {{ resultado }}</div>
         {% endif %}
+
+        <!-- 2. REPRODUCTOR DE AUDIO -->
+        <div class="media-section">
+            <h4>🔊 Efecto de Audio</h4>
+            <audio id="audioBtn" controls>
+                <source src="{% static 'calculadora/audio/click.mp3' %}" type="audio/mpeg">
+                Tu navegador no soporta el elemento de audio.
+            </audio>
+        </div>
+
+        <!-- 3. GEOLOCALIZACIÓN -->
+        <div class="media-section">
+            <h4>📍 Geolocalización</h4>
+            <button type="button" onclick="obtenerUbicacion()" style="background: #1f6beb;">Obtener Mi Ubicación</button>
+            <p id="geoResult" style="font-size: 0.9em; margin-top: 10px;"></p>
+        </div>
     </div>
+
+    <script>
+        function obtenerUbicacion() {
+            const result = document.getElementById("geoResult");
+            if (navigator.geolocation) {
+                result.innerText = "Obteniendo ubicación...";
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        result.innerHTML = `Latitud: ${lat.toFixed(4)} | Longitud: ${lon.toFixed(4)}<br><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">Ver en Google Maps ↗</a>`;
+                    },
+                    function(error) {
+                        result.innerText = "Error o permiso denegado para obtener ubicación.";
+                    }
+                );
+            } else {
+                result.innerText = "Geolocalización no soportada en este navegador.";
+            }
+        }
+    </script>
 </body>
 </html>
