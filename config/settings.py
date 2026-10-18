@@ -46,7 +46,7 @@ ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.DjangoTemplates',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # <-- "django" en minúscula
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
