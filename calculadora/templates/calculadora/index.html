@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Rutas y Visor 3D</title>
+    <title>Mapa, Visor 3D y Multimedia</title>
 
     <!-- Hojas de estilo de Leaflet y Leaflet Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -24,8 +24,9 @@
         body {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
             background-color: #f4f6f8;
+            padding-bottom: 30px;
         }
 
         /* Panel superior de controles */
@@ -83,16 +84,19 @@
             background-color: #1557b0;
         }
 
-        /* Contenedor principal dividido */
+        /* Contenedor principal dividido (Mapa + 3D) con altura fija */
         .main-container {
             display: flex;
-            flex: 1;
-            height: calc(100vh - 80px);
+            height: 450px;
+            margin: 20px;
+            gap: 15px;
         }
 
         #map {
             flex: 2;
             height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .viewer-container {
@@ -102,8 +106,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-left: 2px solid #ddd;
+            border-radius: 12px;
             position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .viewer-title {
@@ -122,12 +128,52 @@
             height: 100%;
         }
 
+        /* Sección inferior: Calculadora y Elementos Multimedia */
+        .extra-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 0 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .card h3 {
+            font-size: 16px;
+            color: #333;
+            width: 100%;
+            text-align: left;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .card img, .card video {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .card audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
+                height: auto;
             }
-            .viewer-container {
+            #map, .viewer-container {
                 height: 300px;
+                width: 100%;
             }
         }
     </style>
@@ -152,15 +198,42 @@
         <div id="map"></div>
         <div class="viewer-container">
             <span class="viewer-title">Vista de Modelo 3D</span>
-            <!-- Ruta corregida hacia el archivo .glb existente en tu carpeta static -->
             <model-viewer 
                 src="{% static 'calculadora/pixellabs-dark-fantasy-3330.glb' %}" 
                 alt="Modelo 3D Dark Fantasy" 
                 auto-rotate 
                 camera-controls 
-                shadow-intensity="1"
-                background-color="#1e1e24">
+                shadow-intensity="1">
             </model-viewer>
+        </div>
+    </div>
+
+    <!-- Sección Complementaria: Calculadora, Imagen, Video y Audio -->
+    <div class="extra-content">
+        <!-- Tarjeta: Calculadora -->
+        <div class="card">
+            <h3>Calculadora</h3>
+            <!-- Aquí puedes incluir tu formulario o lógica de calculadora -->
+            <p style="color: #666; font-size: 14px; text-align: center;">Módulo de calculadora activo.</p>
+        </div>
+
+        <!-- Tarjeta: Imagen -->
+        <div class="card">
+            <h3>Imagen Estática</h3>
+            <img src="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" alt="Imagen representativa">
+        </div>
+
+        <!-- Tarjeta: Video y Audio -->
+        <div class="card">
+            <h3>Archivos Multimedia</h3>
+            <video controls width="100%">
+                <source src="{% static 'calculadora/simulacro.mp4' %}" type="video/mp4">
+                Tu navegador no soporta el reproductor de video.
+            </video>
+            <audio controls>
+                <source src="{% static 'calculadora/sirena.mp3' %}" type="audio/mpeg">
+                Tu navegador no soporta el reproductor de audio.
+            </audio>
         </div>
     </div>
 
@@ -169,10 +242,10 @@
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // 1. Inicializar Mapa (Centrado inicialmente)
-        const map = L.map('map').setView([2.4419, -76.6063], 13); // Coordenadas por defecto (Popayán)
+        // 1. Inicializar Mapa (Centrado en Popayán por defecto)
+        const map = L.map('map').setView([2.4419, -76.6063], 13);
 
-        // 2. Capa estilo Google Maps (Google Streets)
+        // 2. Capa estilo Google Maps
         L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
             maxZoom: 20,
             subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -181,7 +254,7 @@
 
         let routingControl = null;
 
-        // Intentar obtener la posición GPS actual del usuario para el campo "Origen"
+        // Geolocalización del usuario
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 const lat = position.coords.latitude;
@@ -190,16 +263,14 @@
             });
         }
 
-        // Función para convertir texto a Coordenadas (Geocoding)
+        // Convertir texto a coordenadas
         async function obtenerCoordenadas(query) {
-            // Si ya son coordenadas numéricas separadas por coma
             const coordsRegex = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
             if (coordsRegex.test(query.trim())) {
                 const [lat, lon] = query.split(',').map(n => parseFloat(n.trim()));
                 return L.latLng(lat, lon);
             }
 
-            // Si es un nombre de lugar, buscar con Nominatim
             try {
                 const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
                 const data = await response.json();
@@ -216,7 +287,7 @@
             }
         }
 
-        // Función principal para trazar la ruta
+        // Trazar ruta
         async function trazarRutaDesdeInputs() {
             const origenTexto = document.getElementById('origen').value;
             const destinoTexto = document.getElementById('destino').value;
@@ -231,12 +302,10 @@
 
             if (!origenLatLng || !destinoLatLng) return;
 
-            // Remover ruta previa si existe
             if (routingControl) {
                 map.removeControl(routingControl);
             }
 
-            // Crear y agregar la nueva ruta en el mapa
             routingControl = L.Routing.control({
                 waypoints: [origenLatLng, destinoLatLng],
                 routeWhileDragging: true,
