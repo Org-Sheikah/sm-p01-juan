@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa, Visor 3D, Calculadora y Multimedia</title>
+    <title>Mapa, Visor 3D, Calculadora y Galería Multimedia</title>
 
     <!-- Hojas de estilo de Leaflet y Leaflet Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -214,12 +214,12 @@
         .calc-btn.clear { background-color: #a5a5a5; color: black; }
         .calc-btn.clear:hover { background-color: #8e8e8e; }
 
-        /* SECCIÓN MULTIMEDIA (CARGA DE ARCHIVOS) */
+        /* SECCIÓN MULTIMEDIA (CARGA Y GALERÍA) */
         .upload-zone {
             width: 100%;
             border: 2px dashed #1a73e8;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             background-color: #f8fbff;
             cursor: pointer;
@@ -235,40 +235,34 @@
         }
 
         .upload-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #1a73e8;
             font-weight: bold;
             cursor: pointer;
         }
 
-        .files-list {
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 10px;
             width: 100%;
-            max-height: 150px;
+            max-height: 200px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
             margin-top: 10px;
+            padding-right: 5px;
         }
 
-        .file-item {
-            background: #f1f3f4;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .media-item {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
         }
 
-        .file-type-badge {
-            background: #1a73e8;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            text-transform: uppercase;
+        .media-item:hover {
+            transform: scale(1.05);
         }
 
         @media (max-width: 768px) {
@@ -346,26 +340,38 @@
             </div>
         </div>
 
-        <!-- 2. Carga y Gestión de Multimedia -->
+        <!-- 2. Galería Multimedia (Imágenes estáticas + Previsualizador Dinámico) -->
         <div class="card">
-            <h3>Gestor Multimedia (carpeta /multimedia)</h3>
+            <h3>Galería Multimedia (/multimedia)</h3>
+            
             <div class="upload-zone" onclick="document.getElementById('file-input').click();">
-                <label class="upload-label">📁 Haz clic para subir fotos, videos, audios o documentos</label>
-                <input type="file" id="file-input" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt" onchange="gestionarSubida(this.files)">
+                <label class="upload-label">📁 Subir/Visualizar imágenes locales</label>
+                <input type="file" id="file-input" multiple accept="image/*" onchange="previsualizarImagenes(this.files)">
             </div>
-            <div class="files-list" id="files-list">
-                <!-- Archivos subidos dinámicamente aparecerán aquí -->
+
+            <!-- Contenedor dinámico de la Galería -->
+            <div class="media-grid" id="media-grid">
+                <!-- Imagen principal de tu proyecto -->
+                <img class="media-item" src="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" alt="Foto Principal">
+
+                <!-- Agrega aquí manualmente las imágenes que guardes dentro de static/calculadora/multimedia/ -->
+                <!-- Ejemplo:
+                <img class="media-item" src="{% static 'calculadora/multimedia/foto1.jpg' %}" alt="Foto 1">
+                <img class="media-item" src="{% static 'calculadora/multimedia/foto2.jpg' %}" alt="Foto 2">
+                -->
             </div>
         </div>
 
-        <!-- 3. Visor de Multimedia Estático Previo -->
+        <!-- 3. Reproductores de Audio y Video -->
         <div class="card">
-            <h3>Archivos Existentes</h3>
+            <h3>Archivos de Video y Audio</h3>
             <video controls width="100%">
                 <source src="{% static 'calculadora/simulacro.mp4' %}" type="video/mp4">
+                Tu navegador no soporta video HTML5.
             </video>
             <audio controls>
                 <source src="{% static 'calculadora/sirena.mp3' %}" type="audio/mpeg">
+                Tu navegador no soporta audio HTML5.
             </audio>
         </div>
     </div>
@@ -457,23 +463,22 @@
             catch (e) { display.value = 'Error'; }
         }
 
-        // GESTIÓN DE MULTIMEDIA Y SUBIDA DE ARCHIVOS
-        function gestionarSubida(files) {
-            const container = document.getElementById('files-list');
+        // PREVISUALIZACIÓN DINÁMICA DE IMÁGENES
+        function previsualizarImagenes(files) {
+            const grid = document.getElementById('media-grid');
             
             Array.from(files).forEach(file => {
-                let tipo = 'Doc';
-                if (file.type.startsWith('image/')) tipo = 'Foto';
-                else if (file.type.startsWith('video/')) tipo = 'Video';
-                else if (file.type.startsWith('audio/')) tipo = 'Audio';
-
-                const item = document.createElement('div');
-                item.className = 'file-item';
-                item.innerHTML = `
-                    <span>📄 ${file.name}</span>
-                    <span class="file-type-badge">${tipo}</span>
-                `;
-                container.appendChild(item);
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.className = 'media-item';
+                        img.src = e.target.result;
+                        img.alt = file.name;
+                        grid.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
         }
     </script>
