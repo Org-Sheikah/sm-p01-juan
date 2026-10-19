@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa, Visor 3D, Calculadora y Galería Multimedia</title>
+    <title>Mapa, Visor 3D, Calculadora y Descarga Multimedia</title>
 
     <!-- Hojas de estilo de Leaflet y Leaflet Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -156,7 +156,7 @@
             padding-bottom: 8px;
         }
 
-        .card img, .card video {
+        .card video {
             max-width: 100%;
             border-radius: 8px;
         }
@@ -214,7 +214,7 @@
         .calc-btn.clear { background-color: #a5a5a5; color: black; }
         .calc-btn.clear:hover { background-color: #8e8e8e; }
 
-        /* SECCIÓN MULTIMEDIA (CARGA Y GALERÍA) */
+        /* SECCIÓN MULTIMEDIA Y GALERÍA CON DESCARGAS */
         .upload-zone {
             width: 100%;
             border: 2px dashed #1a73e8;
@@ -242,27 +242,62 @@
         }
 
         .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             width: 100%;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             margin-top: 10px;
             padding-right: 5px;
         }
 
-        .media-item {
-            width: 100%;
-            height: 90px;
-            object-fit: cover;
+        /* Tarjeta individual de imagen/archivo con vista previa y descarga */
+        .media-card-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            padding: 8px 12px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
+            gap: 10px;
         }
 
-        .media-item:hover {
-            transform: scale(1.05);
+        .media-preview-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .media-thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .btn-download {
+            background-color: #34a853;
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .btn-download:hover {
+            background-color: #2d8e47;
         }
 
         @media (max-width: 768px) {
@@ -340,39 +375,62 @@
             </div>
         </div>
 
-        <!-- 2. Galería Multimedia (Imágenes estáticas + Previsualizador Dinámico) -->
+        <!-- 2. Galería de Imágenes y Archivos con Descargas (/multimedia) -->
         <div class="card">
-            <h3>Galería Multimedia (/multimedia)</h3>
+            <h3>Galería e Imágenes (/multimedia)</h3>
             
             <div class="upload-zone" onclick="document.getElementById('file-input').click();">
-                <label class="upload-label">📁 Subir/Visualizar imágenes locales</label>
-                <input type="file" id="file-input" multiple accept="image/*" onchange="previsualizarImagenes(this.files)">
+                <label class="upload-label">📁 Seleccionar/Cargar fotos o documentos</label>
+                <input type="file" id="file-input" multiple onchange="previsualizarYDescargar(this.files)">
             </div>
 
-            <!-- Contenedor dinámico de la Galería -->
+            <!-- Lista de Imágenes y Recursos con Descarga -->
             <div class="media-grid" id="media-grid">
-                <!-- Imagen principal de tu proyecto -->
-                <img class="media-item" src="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" alt="Foto Principal">
+                
+                <!-- Imagen 1 (Principal) -->
+                <div class="media-card-item">
+                    <div class="media-preview-box">
+                        <img src="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" class="media-thumb" alt="Foto">
+                        <span>istockphoto.jpg</span>
+                    </div>
+                    <a href="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" download="istockphoto.jpg" class="btn-download">⬇️ Descargar</a>
+                </div>
 
-                <!-- Agrega aquí manualmente las imágenes que guardes dentro de static/calculadora/multimedia/ -->
+                <!-- Modelo 3D (.glb) -->
+                <div class="media-card-item">
+                    <div class="media-preview-box">
+                        <span style="font-size:24px;">📦</span>
+                        <span>pixellabs-3d.glb</span>
+                    </div>
+                    <a href="{% static 'calculadora/pixellabs-dark-fantasy-3330.glb' %}" download="modelo3D.glb" class="btn-download">⬇️ Descargar</a>
+                </div>
+
+                <!-- Puedes agregar aquí más imágenes que guardes dentro de static/calculadora/multimedia/ -->
                 <!-- Ejemplo:
-                <img class="media-item" src="{% static 'calculadora/multimedia/foto1.jpg' %}" alt="Foto 1">
-                <img class="media-item" src="{% static 'calculadora/multimedia/foto2.jpg' %}" alt="Foto 2">
+                <div class="media-card-item">
+                    <div class="media-preview-box">
+                        <img src="{% static 'calculadora/multimedia/foto1.jpg' %}" class="media-thumb" alt="Foto 1">
+                        <span>foto1.jpg</span>
+                    </div>
+                    <a href="{% static 'calculadora/multimedia/foto1.jpg' %}" download="foto1.jpg" class="btn-download">⬇️ Descargar</a>
+                </div>
                 -->
             </div>
         </div>
 
-        <!-- 3. Reproductores de Audio y Video -->
+        <!-- 3. Reproductores de Audio y Video con Opción de Descarga -->
         <div class="card">
-            <h3>Archivos de Video y Audio</h3>
+            <h3>Video y Audio</h3>
+            
             <video controls width="100%">
                 <source src="{% static 'calculadora/simulacro.mp4' %}" type="video/mp4">
-                Tu navegador no soporta video HTML5.
             </video>
+            <a href="{% static 'calculadora/simulacro.mp4' %}" download="simulacro.mp4" class="btn-download" style="width: 100%; text-align: center; justify-content: center;">⬇️ Descargar Video</a>
+
             <audio controls>
                 <source src="{% static 'calculadora/sirena.mp3' %}" type="audio/mpeg">
-                Tu navegador no soporta audio HTML5.
             </audio>
+            <a href="{% static 'calculadora/sirena.mp3' %}" download="sirena.mp3" class="btn-download" style="width: 100%; text-align: center; justify-content: center;">⬇️ Descargar Audio</a>
         </div>
     </div>
 
@@ -463,22 +521,29 @@
             catch (e) { display.value = 'Error'; }
         }
 
-        // PREVISUALIZACIÓN DINÁMICA DE IMÁGENES
-        function previsualizarImagenes(files) {
+        // VISUALIZADOR Y ENLACE DE DESCARGA DE IMÁGENES/ARCHIVOS SELECCIONADOS
+        function previsualizarYDescargar(files) {
             const grid = document.getElementById('media-grid');
             
             Array.from(files).forEach(file => {
+                const url = URL.createObjectURL(file);
+                const item = document.createElement('div');
+                item.className = 'media-card-item';
+
+                let previewHTML = `<span style="font-size:24px;">📄</span>`;
+                
                 if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.className = 'media-item';
-                        img.src = e.target.result;
-                        img.alt = file.name;
-                        grid.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
+                    previewHTML = `<img src="${url}" class="media-thumb" alt="Preview">`;
                 }
+
+                item.innerHTML = `
+                    <div class="media-preview-box">
+                        ${previewHTML}
+                        <span>${file.name}</span>
+                    </div>
+                    <a href="${url}" download="${file.name}" class="btn-download">⬇️ Descargar</a>
+                `;
+                grid.appendChild(item);
             });
         }
     </script>
