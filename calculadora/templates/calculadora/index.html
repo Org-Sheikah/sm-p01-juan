@@ -3,22 +3,88 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Calculadora Django</title>
+    <title>Calculadora Django con Multimedia y Rutas</title>
+    
+    <!-- Script de Google para renderizar el Modelo 3D -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    
+    <!-- CSS y JS de Leaflet y Leaflet Routing Machine para Mapa y Rutas -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; background: #0d1117; color: #c9d1d9; text-align: center; padding: 50px; }
-        .card { background: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 12px; display: inline-block; width: 320px; }
-        input { width: 90%; padding: 8px; margin: 8px 0; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; }
-        button { width: 95%; padding: 10px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        .res { font-size: 1.3em; color: #3fb950; margin-top: 15px; }
-        .media-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #30363d; }
-        img { max-width: 120px; height: auto; margin-bottom: 10px; border-radius: 8px; }
-        a { color: #58a6ff; text-decoration: none; }
-        audio { width: 100%; margin-top: 10px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #0d1117; 
+            color: #c9d1d9; 
+            text-align: center; 
+            padding: 30px 10px; 
+        }
+        .card { 
+            background: #161b22; 
+            border: 1px solid #30363d; 
+            padding: 25px; 
+            border-radius: 12px; 
+            display: inline-block; 
+            width: 380px; 
+            max-width: 90%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        input { 
+            width: 90%; 
+            padding: 10px; 
+            margin: 8px 0; 
+            background: #0d1117; 
+            border: 1px solid #30363d; 
+            color: white; 
+            border-radius: 6px; 
+            box-sizing: border-box;
+        }
+        button { 
+            width: 90%; 
+            padding: 10px; 
+            background: #238636; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 5px; 
+        }
+        button:hover { background: #2ea043; }
+        .res { font-size: 1.3em; color: #3fb950; margin-top: 15px; font-weight: bold; }
+        .media-section { margin-top: 25px; padding-top: 15px; border-top: 1px solid #30363d; }
+        h4 { margin-bottom: 10px; color: #58a6ff; }
+        img { max-width: 140px; height: auto; margin-bottom: 10px; border-radius: 8px; }
+        video { width: 100%; border-radius: 8px; margin-top: 5px; background: #000; }
+        audio { width: 100%; margin-top: 5px; }
+        model-viewer { 
+            width: 100%; 
+            height: 240px; 
+            background-color: #0d1117; 
+            border-radius: 8px; 
+            border: 1px solid #30363d;
+        }
+        #map { 
+            height: 280px; 
+            width: 100%; 
+            border-radius: 8px; 
+            margin-top: 10px; 
+            border: 1px solid #30363d;
+        }
+        /* Ajuste de colores para el cuadro de texto de rutas de Leaflet */
+        .leaflet-routing-container {
+            background-color: #161b22 !important;
+            color: #c9d1d9 !important;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- 1. IMAGEN DE CABECERA / LOGO -->
+        <!-- 1. IMAGEN -->
         <div>
             <img src="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" alt="Imagen Calculadora">
         </div>
@@ -34,40 +100,85 @@
             <div class="res">Resultado: {{ resultado }}</div>
         {% endif %}
 
-        <!-- 2. REPRODUCTOR DE AUDIO -->
+        <!-- 2. MODELO 3D DE CALCULADORA -->
+        <div class="media-section">
+            <h4>📦 Modelo 3D: Calculadora Científica</h4>
+            <model-viewer 
+                src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/ScientificCalculator/glTF-Binary/ScientificCalculator.glb" 
+                alt="Modelo 3D Calculadora" 
+                auto-rotate 
+                camera-controls
+                shadow-intensity="1">
+            </model-viewer>
+        </div>
+
+        <!-- 3. VIDEO -->
+        <div class="media-section">
+            <h4>🎬 Video Explicativo</h4>
+            <video controls preload="metadata">
+                <source src="{% static 'calculadora/simulacro.mp4' %}" type="video/mp4">
+                Tu navegador no soporta la reproducción de video.
+            </video>
+        </div>
+
+        <!-- 4. AUDIO -->
         <div class="media-section">
             <h4>🔊 Efecto de Audio</h4>
-            <audio id="audioBtn" controls preload="auto">
+            <audio controls preload="metadata">
                 <source src="{% static 'calculadora/sirena.mp3' %}" type="audio/mpeg">
                 Tu navegador no soporta el elemento de audio.
             </audio>
         </div>
 
-        <!-- 3. GEOLOCALIZACIÓN -->
+        <!-- 5. MAPA CON TRAZADO DE RUTAS -->
         <div class="media-section">
-            <h4>📍 Geolocalización</h4>
-            <button type="button" onclick="obtenerUbicacion()" style="background: #1f6beb;">Obtener Mi Ubicación</button>
-            <p id="geoResult" style="font-size: 0.9em; margin-top: 10px;"></p>
+            <h4>📍 Mapa y Ruta de Navegación</h4>
+            <button type="button" onclick="cargarMapaYRuta()" style="background: #1f6beb;">Trazar Ruta desde mi Ubicación</button>
+            <div id="map"></div>
         </div>
     </div>
 
     <script>
-        function obtenerUbicacion() {
-            const result = document.getElementById("geoResult");
+        let map, routingControl;
+
+        function cargarMapaYRuta() {
             if (navigator.geolocation) {
-                result.innerText = "Obteniendo ubicación...";
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        result.innerHTML = `Latitud: ${lat.toFixed(4)} | Longitud: ${lon.toFixed(4)}<br><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">Ver en Google Maps ↗</a>`;
-                    },
-                    function(error) {
-                        result.innerText = "Error o permiso denegado para obtener ubicación.";
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latUser = position.coords.latitude;
+                    const lonUser = position.coords.longitude;
+
+                    // Inicializar mapa en las coordenadas actuales del usuario
+                    if (!map) {
+                        map = L.map('map').setView([latUser, lonUser], 13);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap'
+                        }).addTo(map);
                     }
-                );
+
+                    // Destino trazado automáticamente a corta distancia
+                    const latDestino = latUser + 0.012;
+                    const lonDestino = lonUser + 0.012;
+
+                    // Eliminar ruta anterior si existe
+                    if (routingControl) {
+                        map.removeControl(routingControl);
+                    }
+
+                    // Trazar y mostrar hoja de ruta en español
+                    routingControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(latUser, lonUser),
+                            L.latLng(latDestino, lonDestino)
+                        ],
+                        routeWhileDragging: true,
+                        language: 'es'
+                    }).addTo(map);
+
+                }, function(error) {
+                    alert("No se pudo obtener la ubicación GPS o se denegaron los permisos.");
+                });
             } else {
-                result.innerText = "Geolocalización no soportada en este navegador.";
+                alert("La geolocalización no está soportada por tu navegador.");
             }
         }
     </script>
