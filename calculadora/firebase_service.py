@@ -17,13 +17,16 @@ if not firebase_admin._apps:
             firebase_admin.initialize_app(cred)
             print(f"Firebase inicializado correctamente con: {cred_path}")
         else:
-            print(f"ADVERTENCIA: No se encontró el archivo firebase-key.json en ninguna ruta.")
+            print(f"ADVERTENCIA: No se encontró el archivo firebase-key.json. Modo offline/test activado.")
     except Exception as e:
         print(f"Error al inicializar Firebase: {e}")
 
 # Función segura para obtener el cliente de Firestore
 def get_firestore_client():
     try:
+        # Si no hay aplicaciones de Firebase inicializadas (como en GitHub Actions), retorna None sin romper la app
+        if not firebase_admin._apps:
+            return None
         return firestore.client()
     except Exception:
         return None
