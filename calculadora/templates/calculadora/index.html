@@ -176,6 +176,22 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
+        .calc-user-input {
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2a2d37;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .calc-user-input::placeholder {
+            color: #aaa;
+        }
+
         .calc-screen {
             width: 100%;
             height: 50px;
@@ -252,7 +268,6 @@
             padding-right: 5px;
         }
 
-        /* Tarjeta individual de imagen/archivo con vista previa y descarga */
         .media-card-item {
             display: flex;
             align-items: center;
@@ -348,6 +363,9 @@
         <div class="card">
             <h3>Calculadora</h3>
             <div class="calc-box">
+                <!-- CAMPO PARA INGRESAR EL NOMBRE DEL USUARIO -->
+                <input type="text" id="calc-username" class="calc-user-input" placeholder="Tu nombre o usuario">
+                
                 <input type="text" id="calc-display" class="calc-screen" readonly value="0">
                 <div class="calc-buttons">
                     <button class="calc-btn clear" onclick="calcClear()">C</button>
@@ -386,8 +404,6 @@
 
             <!-- Lista de Imágenes y Recursos con Descarga -->
             <div class="media-grid" id="media-grid">
-                
-                <!-- Imagen 1 (Principal) -->
                 <div class="media-card-item">
                     <div class="media-preview-box">
                         <img src="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" class="media-thumb" alt="Foto">
@@ -396,7 +412,6 @@
                     <a href="{% static 'calculadora/istockphoto-1458782106-1024x1024.jpg' %}" download="istockphoto.jpg" class="btn-download">⬇️ Descargar</a>
                 </div>
 
-                <!-- Modelo 3D (.glb) -->
                 <div class="media-card-item">
                     <div class="media-preview-box">
                         <span style="font-size:24px;">📦</span>
@@ -404,17 +419,6 @@
                     </div>
                     <a href="{% static 'calculadora/pixellabs-dark-fantasy-3330.glb' %}" download="modelo3D.glb" class="btn-download">⬇️ Descargar</a>
                 </div>
-
-                <!-- Puedes agregar aquí más imágenes que guardes dentro de static/calculadora/multimedia/ -->
-                <!-- Ejemplo:
-                <div class="media-card-item">
-                    <div class="media-preview-box">
-                        <img src="{% static 'calculadora/multimedia/foto1.jpg' %}" class="media-thumb" alt="Foto 1">
-                        <span>foto1.jpg</span>
-                    </div>
-                    <a href="{% static 'calculadora/multimedia/foto1.jpg' %}" download="foto1.jpg" class="btn-download">⬇️ Descargar</a>
-                </div>
-                -->
             </div>
         </div>
 
@@ -516,12 +520,43 @@
             }
         }
         function calcClear() { display.value = '0'; }
-        function calcCalculate() {
-            try { display.value = eval(display.value); } 
-            catch (e) { display.value = 'Error'; }
+        
+        // FUNCIÓN PARA ENVIAR A DJANGO / FIREBASE INCLUYENDO EL USUARIO
+        function enviarAFirebase(expresion, resultado, usuario) {
+            fetch('/api/guardar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    expresion: expresion,
+                    resultado: resultado,
+                    usuario: usuario
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log('Guardado en Firebase:', data))
+            .catch(error => console.error('Error al guardar:', error));
         }
 
-        // VISUALIZADOR Y ENLACE DE DESCARGA DE IMÁGENES/ARCHIVOS SELECCIONADOS
+        function calcCalculate() {
+            const expresionOriginal = display.value;
+            // Lee el nombre que escribió el usuario (o pone 'anonimo' si lo deja vacío)
+            const inputUser = document.getElementById('calc-username').value.trim();
+            const usuarioFinal = inputUser !== '' ? inputUser : 'anonimo';
+
+            try { 
+                const res = eval(display.value);
+                display.value = res;
+                // Enviar expresión, resultado y usuario
+                enviarAFirebase(expresionOriginal, res, usuarioFinal);
+            } 
+            catch (e) { 
+                display.value = 'Error'; 
+            }
+        }
+
+        // VISUALIZADOR Y ENLACE DE DESCARGA
         function previsualizarYDescargar(files) {
             const grid = document.getElementById('media-grid');
             

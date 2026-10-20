@@ -33,7 +33,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # <-- 1. MIDELLWARE DE WHITENOISE PARA RENDER
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # <-- 1. MIDDLEWARE DE WHITENOISE PARA RENDER
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -46,7 +46,7 @@ ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # <-- "django" en minúscula
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -62,13 +62,35 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# ==============================================================================
+# DATABASE CONFIGURATION
+# ==============================================================================
+# Para alternar a MySQL, cambia esta variable a True
+USAR_MYSQL = False
+
+if USAR_MYSQL:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'sm_p01_db',
+            'USER': 'root',
+            'PASSWORD': 'root',
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
     }
-}
+else:
+    # Configuración por defecto: PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'sm_p01_db',
+            'USER': 'postgres',
+            'PASSWORD': 'root',  # <-- COLOCA TU CONTRASEÑA DE PGADMIN AQUÍ
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
@@ -101,9 +123,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images, Audio)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-# Static files (CSS, JavaScript, Images, Audio)
-# https://docs.djangoproject.com/en/6.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -112,7 +131,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'calculadora' / 'static',
 ]
 
-# 2. Almacenamiento estándar de WhiteNoise (evita fallos estrictos si falta un archivo en los tests)
+# 2. Almacenamiento estándar de WhiteNoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Configuración de Archivos Multimedia
