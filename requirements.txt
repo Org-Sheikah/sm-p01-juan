@@ -10,3 +10,4 @@ PyMySQL
 pymongo
 dnspython
 psycopg2-binary
+firebase-admin
