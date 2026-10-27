@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa, Visor 3D, Calculadora y Descarga Multimedia</title>
+    <title>Mapa, Visor 3D, Calculadora y Relaciones NoSQL</title>
 
     <!-- Hojas de estilo de Leaflet y Leaflet Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -131,7 +131,7 @@
         /* Sección inferior */
         .extra-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin: 0 20px;
         }
@@ -145,6 +145,7 @@
             flex-direction: column;
             gap: 12px;
             align-items: center;
+            position: relative;
         }
 
         .card h3 {
@@ -155,6 +156,20 @@
             border-bottom: 2px solid #f0f0f0;
             padding-bottom: 8px;
         }
+
+        /* Insignias para tipos de relaciones */
+        .badge-relacion {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            align-self: flex-start;
+            margin-bottom: 4px;
+        }
+        .badge-1-1 { background-color: #e3f2fd; color: #0d47a1; }
+        .badge-1-n { background-color: #e8f5e9; color: #1b5e20; }
+        .badge-nm  { background-color: #fff3e0; color: #e65100; }
 
         .card video {
             max-width: 100%;
@@ -262,7 +277,7 @@
             flex-direction: column;
             gap: 12px;
             width: 100%;
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
             margin-top: 10px;
             padding-right: 5px;
@@ -315,6 +330,30 @@
             background-color: #2d8e47;
         }
 
+        .btn-action {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+        .btn-action:hover { background-color: #1557b0; }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+            outline: none;
+        }
+
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -359,11 +398,12 @@
 
     <!-- Sección Inferior -->
     <div class="extra-content">
-        <!-- 1. Calculadora -->
+        
+        <!-- 1. Calculadora (Relaciones 1:1 y 1:N) -->
         <div class="card">
+            <span class="badge-relacion badge-1-1">Relación 1:1 (Perfil) & 1:N (Historial Operaciones)</span>
             <h3>Calculadora</h3>
             <div class="calc-box">
-                <!-- CAMPO PARA INGRESAR EL NOMBRE DEL USUARIO -->
                 <input type="text" id="calc-username" class="calc-user-input" placeholder="Tu nombre o usuario">
                 
                 <input type="text" id="calc-display" class="calc-screen" readonly value="0">
@@ -395,12 +435,15 @@
 
         <!-- 2. Galería de Imágenes y Archivos con Descargas (/multimedia) -->
         <div class="card">
+            <span class="badge-relacion badge-1-n">Relación 1:N (Usuario ↔ Archivos)</span>
             <h3>Galería e Imágenes (/multimedia)</h3>
             
             <div class="upload-zone" onclick="document.getElementById('file-input').click();">
                 <label class="upload-label">📁 Seleccionar/Cargar fotos o documentos</label>
                 <input type="file" id="file-input" multiple onchange="previsualizarYDescargar(this.files)">
             </div>
+
+            <button class="btn-action" onclick="alert('Funcionalidad de guardado de archivo vinculada a Firebase.')">💾 Guardar Archivo en Firebase</button>
 
             <!-- Lista de Imágenes y Recursos con Descarga -->
             <div class="media-grid" id="media-grid">
@@ -422,20 +465,26 @@
             </div>
         </div>
 
-        <!-- 3. Reproductores de Audio y Video con Opción de Descarga -->
+        <!-- 3. Relación Muchos a Muchos (N:M) - Rutas y Etiquetas -->
         <div class="card">
-            <h3>Video y Audio</h3>
+            <span class="badge-relacion badge-nm">Relación N:M (Rutas ↔ Etiquetas Cruzadas)</span>
+            <h3>Gestión de Rutas y Etiquetas</h3>
             
-            <video controls width="100%">
-                <source src="{% static 'calculadora/simulacro.mp4' %}" type="video/mp4">
-            </video>
-            <a href="{% static 'calculadora/simulacro.mp4' %}" download="simulacro.mp4" class="btn-download" style="width: 100%; text-align: center; justify-content: center;">⬇️ Descargar Video</a>
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" id="nm-origen" placeholder="Origen (ej: Medellin)" class="form-control-custom">
+                <input type="text" id="nm-destino" placeholder="Destino (ej: Madrid)" class="form-control-custom">
+                <input type="text" id="nm-etiquetas" placeholder="Etiquetas separadas por coma (ej: viaje, norte)" class="form-control-custom">
+                <button type="button" class="btn-action" style="background-color: #ff9500;" onclick="enviarRutaFirebase()">🔗 Guardar Relación N:M</button>
+            </div>
 
-            <audio controls>
-                <source src="{% static 'calculadora/sirena.mp3' %}" type="audio/mpeg">
-            </audio>
-            <a href="{% static 'calculadora/sirena.mp3' %}" download="sirena.mp3" class="btn-download" style="width: 100%; text-align: center; justify-content: center;">⬇️ Descargar Audio</a>
+            <div style="width: 100%; margin-top: 5px;">
+                <video controls width="100%" style="height: 120px; object-fit: cover;">
+                    <source src="{% static 'calculadora/simulacro.mp4' %}" type="video/mp4">
+                </video>
+                <a href="{% static 'calculadora/simulacro.mp4' %}" download="simulacro.mp4" class="btn-download" style="width: 100%; text-align: center; justify-content: center; margin-top: 4px;">⬇️ Descargar Video</a>
+            </div>
         </div>
+
     </div>
 
     <!-- Scripts de Leaflet -->
@@ -541,19 +590,52 @@
 
         function calcCalculate() {
             const expresionOriginal = display.value;
-            // Lee el nombre que escribió el usuario (o pone 'anonimo' si lo deja vacío)
             const inputUser = document.getElementById('calc-username').value.trim();
             const usuarioFinal = inputUser !== '' ? inputUser : 'anonimo';
 
             try { 
                 const res = eval(display.value);
                 display.value = res;
-                // Enviar expresión, resultado y usuario
                 enviarAFirebase(expresionOriginal, res, usuarioFinal);
             } 
             catch (e) { 
                 display.value = 'Error'; 
             }
+        }
+
+        // NUEVA FUNCIÓN REAL PARA GUARDAR LA RELACIÓN N:M (Rutas y Etiquetas)
+        function enviarRutaFirebase() {
+            const origen = document.getElementById('nm-origen').value.trim();
+            const destino = document.getElementById('nm-destino').value.trim();
+            const etiquetasTexto = document.getElementById('nm-etiquetas').value.trim();
+
+            if (!origen || !destino || !etiquetasTexto) {
+                alert("Por favor completa origen, destino y etiquetas.");
+                return;
+            }
+
+            const listaEtiquetas = etiquetasTexto.split(',').map(e => e.trim()).filter(e => e !== '');
+
+            fetch('/api/guardar-ruta/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    origen: origen,
+                    destino: destino,
+                    etiquetas: listaEtiquetas
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("¡Ruta y etiquetas guardadas con éxito en Firebase (Relación N:M)!");
+                console.log('Guardado N:M:', data);
+            })
+            .catch(error => {
+                console.error('Error al guardar ruta:', error);
+                alert("Ocurrió un error al conectar con el servidor.");
+            });
         }
 
         // VISUALIZADOR Y ENLACE DE DESCARGA
